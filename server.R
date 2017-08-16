@@ -39,6 +39,10 @@ for(i in 1:5){
   else{
     print(price)
   }
+  
+  #컬럼명 수정
+  colnames(mystr) <- c("채널명", "가격")
+  colnames(mystr2) <- c("채널명", "가격")
 }
 
 #닷컴 크롤링
@@ -51,7 +55,7 @@ dotcomresult <- matrix(nrow = 100, ncol = 2)
 #상품명을 담는다
 for(i in 1:100){
   namexpath <- paste0("//*[@id='contItem']/ul/li/div/ol/li[", i, "]/div/div[2]/div[3]/a/p/text()")
-
+  
   #닷컴 상품명 xpath 크롤링
   dotcomname <- xpathSApply(dotcomPARSED, namexpath, xmlValue)
   #2가지 xpath 존재
@@ -67,7 +71,7 @@ for(i in 1:100){
 for(i in 1:100){
   #판매가의 경우
   #pricexpath <- paste0("//*[@id='contItem']/ul/li/div/ol/li[", i, "]/div/div[2]/div[4]/p[1]/del")
-
+  
   #닷컴 상품 가격 xpath 크롤링
   pricexpath <- paste0("//*[@id='contItem']/ul/li/div/ol/li[", i, "]/div/div[2]/div[4]/p[2]/strong")
   dotcomprice <- xpathSApply(dotcomPARSED, pricexpath, xmlValue)
@@ -83,7 +87,7 @@ for(i in 1:100){
       pricexpath <- paste0("//*[@id='contItem']/ul/li/div/ol/li[", i, "]/div/div[2]/div[4]/p[2]/span")
       print(i)
       dotcomprice <- xpathSApply(dotcomPARSED, pricexpath, xmlValue)
-
+      
     }
     if(is.null(dotcomprice)){
       pricexpath <- paste0("//*[@id='contItem']/ul/li/div/ol/li[", i, "]/div/div[2]/div[4]/p/span")
@@ -102,10 +106,14 @@ for(i in 1:100){
     }
   }
   dotcomresult[i,2] <- dotcomprice
+  
+  #컬럼명 수정
+  colnames(dotcomresult) <- c("상품명", "가격")
+  colnames(result) <- c("채널명", "가격")
 }
 
 #DB 연결
-con <- dbConnect(MySQL(), user = "root", password = "0000", dbname = "crawler")
+con <- dbConnect(MySQL(), user = "root", password = "redculture1!", dbname = "crawler")
 dbListTables(con)
 dbListFields(con, "naver_shopping")
 a <- con %>%dbGetQuery("select * from naver_shopping")
@@ -123,18 +131,21 @@ shinyServer(function(input, output, session) {
   output$dotcom <- renderTable({
     data(dotcomresult)
     dotcomresult[1:100,]
-  }, caption = "Dotcom Crawling data",
-     caption.placement = getOption("xtable.caption.placement", "top"),
-     caption.width = getOption("xtable.caption.width", NULL)
+  }, caption = "Dotcom Crawling Data",
+  caption.placement = getOption("xtable.caption.placement", "top"),
+  caption.width = getOption("xtable.caption.width", NULL)
   )
   
   #네이버 쇼핑 상품 크롤링
   output$naver_shopping <- renderTable({
-    data(mystr)
-    mystr[1:1,]
-  }, caption = "Naver_shopping Crawling data",
-     caption.placement = getOption("xtable.caption.placement", "top"),
-     caption.width = getOption("xtable.caption.width", NULL)
+    data(result)
+    result[1:5,]
+    #data(mystr)
+    #mystr[1:1,]
+  }, caption = "Naver_shopping Crawling Data",
+  caption.placement = getOption("xtable.caption.placement", "top"),
+  caption.width = getOption("xtable.caption.width", NULL)
   )
   
 })
+
