@@ -27,6 +27,10 @@ for(i in 1:5){
   else{
     print(price)
   }
+  
+  #컬럼명 수정
+  colnames(mystr) <- c("채널명", "가격")
+  colnames(mystr2) <- c("채널명", "가격")
 }
 
 con <- dbConnect(MySQL(), user = "root", password = "0000", dbname = "crawler")
