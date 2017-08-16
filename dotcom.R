@@ -65,6 +65,10 @@ for(i in 1:100){
     }
   }
   dotcomresult[i,2] <- dotcomprice
+  
+  #컬럼명 수정
+  colnames(dotcomresult) <- c("상품명", "가격")
+  colnames(result) <- c("채널명", "가격")
 }
 #i = 11
 #pricexpath <- paste0("//*[@id='contItem']/ul/li/div/ol/li[", i, "]/div/div[2]/div[4]/p[2]/span")
